@@ -1,0 +1,17 @@
+<package>
+  <description brief="Simple package to receive frames from an ip camera (rtsp) through gstreamer and convert it into Rock image (base::samples::frame::frame) to an outpout port.">
+  To achieve this objective, appsink from gstreamer is used. At hook configuration we set the appsink structure. Then at hook start the pipeline is set defining the callback (signal) to receive appsink frames. And finally, hook update send the image from appsink callback to output port.
+  </description>
+  <author>Henrique Ferreira Júnior/henrique.ferreira@tidewise.io</author>
+  <license></license>
+  <url>http://gitlab.com/henriquejsfj</url>
+  <logo>http://</logo>
+  <depend package="base/cmake" />
+  <!--
+   To add any dependencies use the depend tag
+  <depend package="dummy-dependency-0" />
+	...
+  <depend package="dummy-dependency-n-1" />
+  <depend package="dummy-dependency-n" />
+  -->
+</package>

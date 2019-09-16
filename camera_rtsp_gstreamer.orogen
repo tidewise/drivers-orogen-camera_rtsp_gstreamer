@@ -1,0 +1,67 @@
+name "camera_rtsp_gstreamer"
+
+using_library 'base-logging', typekit: false
+using_library 'gstreamer-webrtc-1.0', typekit: false
+using_library 'gstreamer-video-1.0', typekit: false
+using_library 'gstreamer-app-1.0', typekit: false
+using_library 'libsoup-2.4', typekit: false
+using_library 'json-glib-1.0', typekit: false
+import_types_from 'base'
+import_types_from "camera_rtsp_gstreamerTypes.hpp"
+# Finally, it is pretty common that headers are directly loaded from an external
+# library. In this case, the library must be first used (the name is the
+# library's pkg-config name) and then the header can be used. Following Rock
+# conventions, a common use-case would be:
+#
+# using_library "camera_rtsp_gstreamer"
+# import_types_from "camera_rtsp_gstreamer/CustomType.hpp"
+
+OroGen::Spec::Deployment.register_global_initializer(:gstreamer)
+if defined?(OroGen::Gen::RTT_CPP::Deployment)
+    OroGen::Gen::RTT_CPP::Deployment.register_global_initializer(
+        :gstreamer,
+        deployment_cmake: <<~GST_DEPLOYMENT_CMAKE,
+            orogen_pkg_check_modules(gstreamer_app_1_0 REQUIRED gstreamer-app-1.0)
+            include_directories(${gstreamer_app_1_0_INCLUDE_DIRS})
+            add_definitions(${gstreamer_app_1_0_CFLAGS_OTHER})
+            link_directories(${gstreamer_app_1_0_LIBRARY_DIRS})
+            target_link_libraries(<%= deployer.name %> ${gstreamer_app_1_0_LIBRARIES})
+        GST_DEPLOYMENT_CMAKE
+        global_scope: <<~GST_TOPLEVEL,
+            #include <gst/gst.h>
+        GST_TOPLEVEL
+        init: <<~GST_INIT,
+            gst_init(&argc, &argv);
+        GST_INIT
+        exit: <<~GST_EXIT
+            gst_deinit();
+        GST_EXIT
+    )
+end
+
+# Declare a new task context (i.e., a component)
+#
+# The corresponding C++ class can be edited in tasks/Task.hpp and
+# tasks/Task.cpp, and will be put in the camera_rtsp_gstreamer namespace.
+
+task_context 'ReceiverTask' do
+    needs_configuration
+
+    needs_global_initializer :gstreamer
+
+    # The target fps
+    property 'fps', 'int', 25
+
+    # The port on which the embedded server is listening
+    property 'port', 'int', 57_778
+
+    # Encoding configuration (defaults to VP8)
+    property 'encoding', 'camera_rtsp_gstreamer/Encoding'
+
+    # The images to stream
+    output_port 'images', ro_ptr('/base/samples/frame/Frame')
+
+    port_driven
+
+    exception_states 'GSTREAMER_ERROR'
+end
