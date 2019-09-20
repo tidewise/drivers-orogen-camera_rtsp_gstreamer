@@ -21,7 +21,7 @@ if defined?(OroGen::Gen::RTT_CPP::Deployment)
     OroGen::Gen::RTT_CPP::Deployment.register_global_initializer(
         :gstreamer,
         deployment_cmake: <<~GST_DEPLOYMENT_CMAKE,
-            orogen_pkg_check_modules(gstreamer_app_1_0 REQUIRED gstreamer-app-1.0)
+            orogen_pkg_check_modules(gstreamer_app_1_0 REQUIRED gstreamer-app-1.0 gstreamer-video-1.0)
             include_directories(${gstreamer_app_1_0_INCLUDE_DIRS})
             add_definitions(${gstreamer_app_1_0_CFLAGS_OTHER})
             link_directories(${gstreamer_app_1_0_LIBRARY_DIRS})
@@ -59,9 +59,9 @@ task_context 'ReceiverTask' do
     property 'encoding', 'camera_rtsp_gstreamer/Encoding'
 
     # The images to stream
-    output_port 'images', ro_ptr('/base/samples/frame/Frame')
+    output_port 'images', '/base/samples/frame/Frame'
 
-    port_driven
+    # port_driven
 
     exception_states 'GSTREAMER_ERROR'
 end

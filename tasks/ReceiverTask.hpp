@@ -3,7 +3,22 @@
 #ifndef CAMERA_RTSP_GSTREAMER_RECEIVERTASK_TASK_HPP
 #define CAMERA_RTSP_GSTREAMER_RECEIVERTASK_TASK_HPP
 
+#include <gst/gst.h>
+#include <gst/app/gstappsink.h>
+#include <gst/video/video.h>
+#include <base/samples/Frame.hpp>
+
 #include "camera_rtsp_gstreamer/ReceiverTaskBase.hpp"
+
+typedef struct _CustomData {
+  GstElement *pipeline;
+  GstElement *source;
+  GstElement *convert;
+  GstElement *sink;
+  bool has_new_image;
+  base::samples::frame::Frame frame;
+  RTT::OutputPort< ::base::samples::frame::Frame > *writer;
+} CustomData;
 
 namespace camera_rtsp_gstreamer{
 
@@ -11,7 +26,7 @@ namespace camera_rtsp_gstreamer{
      * \brief The task context provides and requires services. It uses an ExecutionEngine to perform its functions.
      * Essential interfaces are operations, data flow ports and properties. These interfaces have been defined using the oroGen specification.
      * In order to modify the interfaces you should (re)use oroGen and rely on the associated workflow.
-     * 
+     *
      * \details
      * The name of a TaskContext is primarily defined via:
      \verbatim
@@ -24,6 +39,11 @@ namespace camera_rtsp_gstreamer{
     class ReceiverTask : public ReceiverTaskBase
     {
 	friend class ReceiverTaskBase;
+
+    CustomData data;
+
+    static GstFlowReturn new_sample (GstElement *sink, CustomData *data);
+
     protected:
 
 
