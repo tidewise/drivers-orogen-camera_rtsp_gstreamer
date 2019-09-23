@@ -8,7 +8,11 @@
 #include <gst/video/video.h>
 #include <base/samples/Frame.hpp>
 
+#include <string.h>
+
 #include "camera_rtsp_gstreamer/ReceiverTaskBase.hpp"
+
+using namespace std;
 
 typedef struct _CustomData {
   GstElement *pipeline;

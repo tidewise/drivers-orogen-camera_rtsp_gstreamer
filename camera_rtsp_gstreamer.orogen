@@ -49,14 +49,11 @@ task_context 'ReceiverTask' do
 
     needs_global_initializer :gstreamer
 
-    # The target fps
-    property 'fps', 'int', 25
+    property 'width', 'int', 1920
 
-    # The port on which the embedded server is listening
-    property 'port', 'int', 57_778
+    property 'height', 'int', 1080
 
-    # Encoding configuration (defaults to VP8)
-    property 'encoding', 'camera_rtsp_gstreamer/Encoding'
+    property 'uri', '/std/string', 'rtsp://admin:camera01@10.20.0.188:80'
 
     # The images to stream
     output_port 'images', '/base/samples/frame/Frame'

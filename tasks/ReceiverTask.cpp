@@ -112,6 +112,7 @@ static void cb_message (GstBus * bus, GstMessage * msg, CustomData * data){
 ReceiverTask::ReceiverTask(std::string const& name)
     : ReceiverTaskBase(name)
 {
+    // _uri.set('rtsp://admin:camera01@10.20.0.188:80');
 }
 
 ReceiverTask::~ReceiverTask()
@@ -162,7 +163,9 @@ bool ReceiverTask::startHook()
     GstCaps *video_caps;
     GstVideoInfo info;
 
-    g_object_set (data.source, "uri", "rtsp://admin:camera01@10.20.0.188:80 latency=0 buffer-mode=auto ! decodebin ! videoconvert ! autovideosink sync=false", NULL);
+    string uri = _uri.get() + " latency=0 buffer-mode=auto ! decodebin ! videoconvert ! autovideosink sync=false";
+
+    g_object_set (data.source, "uri", uri.c_str(), NULL);
 
     /* Connect to the pad-added signal */
     g_signal_connect (data.source, "pad-added", G_CALLBACK (pad_added_handler), &data);
@@ -191,7 +194,7 @@ bool ReceiverTask::startHook()
     /* Setting Rock frame */
     base::samples::frame::frame_mode_t mode;
     mode = base::samples::frame::frame_mode_t::MODE_RGB;
-    data.frame = base::samples::frame::Frame(1920, 1080, 8, mode);
+    data.frame = base::samples::frame::Frame(_width.get(), _height.get(), 8, mode);
 
     return true;
 }
