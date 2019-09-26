@@ -16,10 +16,7 @@ using namespace std;
 
 typedef struct _CustomData {
   GstElement *pipeline;
-  GstElement *source;
-  GstElement *convert;
   GstElement *sink;
-  bool has_new_image;
   base::samples::frame::Frame frame;
   RTT::OutputPort< ::base::samples::frame::Frame > *writer;
 } CustomData;
