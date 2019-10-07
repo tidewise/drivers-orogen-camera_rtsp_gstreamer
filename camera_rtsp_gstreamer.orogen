@@ -49,14 +49,14 @@ task_context 'ReceiverTask' do
 
     needs_global_initializer :gstreamer
 
-    property 'width', 'int', 1920
+    property 'width', 'int', 1280
 
-    property 'height', 'int', 1080
+    property 'height', 'int', 720
 
     property 'uri', '/std/string', 'rtsp://admin:camera01@10.20.0.188:80'
 
     # The images to stream
-    output_port 'images', '/base/samples/frame/Frame'
+    output_port 'images', ro_ptr('/base/samples/frame/Frame')
 
     # port_driven
 

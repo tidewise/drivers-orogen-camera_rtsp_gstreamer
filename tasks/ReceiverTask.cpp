@@ -4,31 +4,32 @@
 
 #include "ReceiverTask.hpp"
 
-using namespace camera_rtsp_gstreamer;
-
+using namespace std;
 using namespace base::samples::frame;
+using namespace camera_rtsp_gstreamer;
 
 GstFlowReturn ReceiverTask::new_sample (GstElement *sink, CustomData *data) {
     /* Retrieve the buffer */
     GstSample *sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
-    std::cout << gst_caps_to_string(gst_sample_get_caps(sample));
 
     /* If we have a new sample we have to send it to our Rock frame */
     GstBuffer *buffer = gst_sample_get_buffer (sample);
     if (buffer != NULL){
         GstMemory *memory = gst_buffer_get_memory(buffer, 0);
         GstMapInfo info;
-        if (gst_memory_map(memory, &info, GST_MAP_READ)){
-            data->frame.time = base::Time::now();
-            data->frame.frame_status = STATUS_VALID;
+        if (gst_memory_map(memory, &info, GST_MAP_READ)) {
+            CustomData::Frame* frame = data->frame.write_access();
+            frame->time = base::Time::now();
+            frame->frame_status = STATUS_VALID;
 
-            uint8_t* pixels = &(data->frame.image[0]);
-            int pixel_count = data->frame.getPixelCount();
+            uint8_t* pixels = &(frame->image[0]);
+            int pixel_count = frame->getPixelCount();
             for (int i = 0; i < pixel_count; ++i) {
                 pixels[i * 3] = info.data[i * 4];
                 pixels[i * 3 + 1] = info.data[i * 4 + 1];
-                pixels[i * 3 + 2] = info.data[i * 4 + 1];
+                pixels[i * 3 + 2] = info.data[i * 4 + 2];
             }
+            data->frame.reset(frame);
             data->writer->write(data->frame);
         }
         gst_memory_unmap(memory, &info);
@@ -113,8 +114,8 @@ bool ReceiverTask::configureHook()
     data.writer = &_images;
 
     /* Setting Rock frame */
-    data.frame = Frame(_width.get(), _height.get(), 8,
-                       frame_mode_t::MODE_RGB);
+    data.frame = new Frame(_width.get(), _height.get(), 8,
+                           frame_mode_t::MODE_RGB);
 
     return true;
 }

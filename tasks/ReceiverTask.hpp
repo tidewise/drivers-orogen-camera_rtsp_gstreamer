@@ -7,21 +7,20 @@
 #include <gst/app/gstappsink.h>
 #include <gst/video/video.h>
 #include <base/samples/Frame.hpp>
-
 #include <string.h>
-
 #include "camera_rtsp_gstreamer/ReceiverTaskBase.hpp"
 
-using namespace std;
+namespace camera_rtsp_gstreamer {
+    struct CustomData {
+        GstElement *pipeline;
+        GstElement *sink;
 
-typedef struct _CustomData {
-  GstElement *pipeline;
-  GstElement *sink;
-  base::samples::frame::Frame frame;
-  RTT::OutputPort< ::base::samples::frame::Frame > *writer;
-} CustomData;
+        typedef base::samples::frame::Frame Frame;
+        typedef RTT::extras::ReadOnlyPointer<Frame> ROPtrFrame;
 
-namespace camera_rtsp_gstreamer{
+        ROPtrFrame frame;
+        RTT::OutputPort<ROPtrFrame> *writer;
+    };
 
     /*! \class ReceiverTask
      * \brief The task context provides and requires services. It uses an ExecutionEngine to perform its functions.
@@ -39,15 +38,12 @@ namespace camera_rtsp_gstreamer{
      */
     class ReceiverTask : public ReceiverTaskBase
     {
-	friend class ReceiverTaskBase;
+        friend class ReceiverTaskBase;
 
-    CustomData data;
-
-    static GstFlowReturn new_sample (GstElement *sink, CustomData *data);
+        CustomData data;
+        static GstFlowReturn new_sample (GstElement *sink, CustomData *data);
 
     protected:
-
-
 
     public:
         /** TaskContext constructor for ReceiverTask
@@ -58,7 +54,7 @@ namespace camera_rtsp_gstreamer{
 
         /** Default deconstructor of ReceiverTask
          */
-	~ReceiverTask();
+        ~ReceiverTask();
 
         /** This hook is called by Orocos when the state machine transitions
          * from PreOperational to Stopped. If it returns false, then the
