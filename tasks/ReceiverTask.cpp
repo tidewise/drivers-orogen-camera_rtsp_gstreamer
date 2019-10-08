@@ -62,7 +62,7 @@ bool ReceiverTask::configureHook()
         return false;
 
     GError *error = NULL;
-    gchar *descr = g_strdup_printf ("uridecodebin uri=%s ! vaapipostproc ! video/x-raw,format=(string)RGBA !"
+    gchar *descr = g_strdup_printf ("rtspsrc location=%s latency=0 buffer-mode=auto ! decodebin ! vaapipostproc ! video/x-raw,format=(string)RGBA !"
       " appsink name=sink max-buffers=2 drop=TRUE", "rtsp://admin:camera01@10.20.0.188:80");//_uri.get().c_str());
     data.pipeline = gst_parse_launch (descr, &error);
 
