@@ -61,9 +61,13 @@ bool ReceiverTask::configureHook()
     if (! ReceiverTaskBase::configureHook())
         return false;
 
+    // Camera Onvif Initialization and setting
+    camera = new camera_onvif::CameraOnvif(_user.get(), _pass.get(), _ip.get(),
+     _width.get(), _height.get());
+
     GError *error = NULL;
-    gchar *descr = g_strdup_printf ("rtspsrc location=%s drop-on-latency=true latency=0 buffer-mode=auto ! rtph264depay ! h264parse ! vaapih264dec low-latency=true ! vaapipostproc ! video/x-raw,format=(string)RGBA !"
-      " appsink name=sink max-buffers=1 drop=TRUE", "rtsp://admin:camera01@10.20.0.188:554");//_uri.get().c_str());
+    gchar *descr = g_strdup_printf ("rtspsrc location=rtsp://%s:%s@%s:554 drop-on-latency=true latency=0 buffer-mode=auto ! rtph264depay ! h264parse ! vaapih264dec low-latency=true ! vaapipostproc ! video/x-raw,format=(string)RGBA !"
+      " appsink name=sink max-buffers=1 drop=TRUE", _user.get().c_str(), _pass.get().c_str(), _ip.get().c_str());
     data.pipeline = gst_parse_launch (descr, &error);
 
     if (error != NULL) {
@@ -119,5 +123,5 @@ void ReceiverTask::cleanupHook()
     ReceiverTaskBase::cleanupHook();
     gst_object_unref (data.sink);
     gst_object_unref (data.pipeline);
-
+    delete camera;
 }

@@ -9,6 +9,7 @@
 #include <base/samples/Frame.hpp>
 #include <string.h>
 #include "camera_rtsp_gstreamer/ReceiverTaskBase.hpp"
+#include <camera_onvif/CameraOnvif.hpp>
 
 namespace camera_rtsp_gstreamer {
     struct CustomData {
@@ -21,6 +22,7 @@ namespace camera_rtsp_gstreamer {
         ROPtrFrame frame;
         RTT::OutputPort<ROPtrFrame> *writer;
     };
+
 
     /*! \class ReceiverTask
      * \brief The task context provides and requires services. It uses an ExecutionEngine to perform its functions.
@@ -42,6 +44,8 @@ namespace camera_rtsp_gstreamer {
 
         CustomData data;
         static GstFlowReturn new_sample (GstElement *sink, CustomData *data);
+
+        camera_onvif::CameraOnvif *camera = nullptr;
 
     protected:
 
