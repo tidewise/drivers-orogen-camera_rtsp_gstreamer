@@ -79,7 +79,7 @@ bool ReceiverTask::configureHook()
 
     data.writer = &_images;
 
-    /* Setting Rock frame */
+    /* Initializing Rock frame */
     data.frame = new Frame(_width.get(), _height.get(), 8,
                            frame_mode_t::MODE_RGB);
 
@@ -89,7 +89,6 @@ bool ReceiverTask::startHook()
 {
     if (! ReceiverTaskBase::startHook())
         return false;
-
 
     /* Start playing */
     GstStateChangeReturn ret = gst_element_set_state (data.pipeline, GST_STATE_PLAYING);
@@ -104,7 +103,6 @@ bool ReceiverTask::startHook()
 void ReceiverTask::updateHook()
 {
     ReceiverTaskBase::updateHook();
-
 }
 void ReceiverTask::errorHook()
 {
@@ -113,11 +111,13 @@ void ReceiverTask::errorHook()
 void ReceiverTask::stopHook()
 {
     ReceiverTaskBase::stopHook();
-    gst_element_set_state (data.pipeline, GST_STATE_NULL);
+    gst_element_set_state (data.pipeline, GST_STATE_PAUSED);
 }
 void ReceiverTask::cleanupHook()
 {
+    gst_element_set_state (data.pipeline, GST_STATE_NULL);
     ReceiverTaskBase::cleanupHook();
+    gst_object_unref (data.sink);
     gst_object_unref (data.pipeline);
 
 }
