@@ -119,7 +119,6 @@ void ReceiverTask::updateHook()
     auto img_param = camera_onvif::ImageParam();
     if (_image_param.read(img_param) == RTT::NewData){
         camera->setImageParam(img_param);
-        cout << img_param.contrast << " " << img_param.brightness << endl;
     }
 }
 void ReceiverTask::errorHook()

@@ -53,9 +53,9 @@ task_context 'ReceiverTask' do
     needs_global_initializer :gstreamer
 
     # The imaging options are percentage 0-1.
-    property 'contrast', 'float', 0.1
-    property 'brightness', 'float', 0.1
-    property 'color_saturation', 'float', 0.1
+    property 'contrast', 'float', 0.5
+    property 'brightness', 'float', 0.5
+    property 'color_saturation', 'float', 0.5
 
     # The resolution options (width, height) are: (1920, 1080) - (1280, 960) - (1280, 720)
     property 'width', 'int', 1280
