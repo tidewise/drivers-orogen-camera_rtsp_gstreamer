@@ -62,12 +62,21 @@ bool ReceiverTask::configureHook()
         return false;
 
     // Camera Onvif Initialization and setting
-    camera = new camera_onvif::CameraOnvif(_user.get(), _pass.get(), _ip.get(),
-     _width.get(), _height.get());
+    camera = new camera_onvif::CameraOnvif(_user.get(), _pass.get(), _ip.get());
+    camera->setResolution(_width.get(), _height.get());
+
+    auto params = camera_onvif::ImageParam();
+    params.brightness = _brightness.get();
+    params.color_saturation = _color_saturation.get();
+    params.contrast = _contrast.get();
+    camera->setImageParam(params);
 
     GError *error = NULL;
-    gchar *descr = g_strdup_printf ("rtspsrc location=rtsp://%s:%s@%s:554 drop-on-latency=true latency=0 buffer-mode=auto ! rtph264depay ! h264parse ! vaapih264dec low-latency=true ! vaapipostproc ! video/x-raw,format=(string)RGBA !"
-      " appsink name=sink max-buffers=1 drop=TRUE", _user.get().c_str(), _pass.get().c_str(), _ip.get().c_str());
+    gchar *descr = g_strdup_printf ("rtspsrc location=rtsp://%s:%s@%s:554 "
+        "drop-on-latency=true latency=0 buffer-mode=auto ! rtph264depay ! h264parse "
+        "! vaapih264dec low-latency=true ! vaapipostproc ! video/x-raw,format=(string)RGBA !"
+        " appsink name=sink max-buffers=1 drop=TRUE",
+         _user.get().c_str(), _pass.get().c_str(), _ip.get().c_str());
     data.pipeline = gst_parse_launch (descr, &error);
 
     if (error != NULL) {
@@ -107,6 +116,11 @@ bool ReceiverTask::startHook()
 void ReceiverTask::updateHook()
 {
     ReceiverTaskBase::updateHook();
+    auto img_param = camera_onvif::ImageParam();
+    if (_image_param.read(img_param) == RTT::NewData){
+        camera->setImageParam(img_param);
+        cout << img_param.contrast << " " << img_param.brightness << endl;
+    }
 }
 void ReceiverTask::errorHook()
 {

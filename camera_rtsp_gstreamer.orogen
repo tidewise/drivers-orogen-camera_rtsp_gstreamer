@@ -52,6 +52,11 @@ task_context 'ReceiverTask' do
 
     needs_global_initializer :gstreamer
 
+    # The imaging options are percentage 0-1.
+    property 'contrast', 'float', 0.1
+    property 'brightness', 'float', 0.1
+    property 'color_saturation', 'float', 0.1
+
     # The resolution options (width, height) are: (1920, 1080) - (1280, 960) - (1280, 720)
     property 'width', 'int', 1280
     property 'height', 'int', 720
@@ -65,7 +70,9 @@ task_context 'ReceiverTask' do
     # The images to stream
     output_port 'images', ro_ptr('/base/samples/frame/Frame')
 
-    # port_driven
+    input_port 'image_param', 'camera_onvif::ImageParam'
 
     exception_states 'GSTREAMER_ERROR'
+
+    port_driven 'image_param'
 end
