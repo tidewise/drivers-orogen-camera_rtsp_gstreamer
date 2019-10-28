@@ -82,6 +82,7 @@ bool ReceiverTask::configureHook()
     if (error != NULL) {
         g_print ("could not construct pipeline: %s\n", error->message);
         g_clear_error (&error);
+        delete camera;
         return false;
     }
 
@@ -93,8 +94,15 @@ bool ReceiverTask::configureHook()
     data.writer = &_images;
 
     /* Initializing Rock frame */
-    data.frame = new Frame(_width.get(), _height.get(), 8,
-                           frame_mode_t::MODE_RGB);
+    data.frame = new Frame(_width.get(), _height.get(), 8, frame_mode_t::MODE_RGB);
+
+    // Check if the resources are available and alocate it
+    GstStateChangeReturn ret = gst_element_set_state (data.pipeline, GST_STATE_READY);
+    if (ret == GST_STATE_CHANGE_FAILURE) {
+        g_printerr ("Unable to set the pipeline to the ready state.\n");
+        delete camera;
+        return false;
+    }
 
     return true;
 }
@@ -107,7 +115,6 @@ bool ReceiverTask::startHook()
     GstStateChangeReturn ret = gst_element_set_state (data.pipeline, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE) {
         g_printerr ("Unable to set the pipeline to the playing state.\n");
-        gst_object_unref (data.pipeline);
         return false;
     }
 
@@ -134,7 +141,5 @@ void ReceiverTask::cleanupHook()
 {
     gst_element_set_state (data.pipeline, GST_STATE_NULL);
     ReceiverTaskBase::cleanupHook();
-    gst_object_unref (data.sink);
-    gst_object_unref (data.pipeline);
     delete camera;
 }

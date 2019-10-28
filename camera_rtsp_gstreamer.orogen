@@ -11,20 +11,13 @@ import_types_from "camera_rtsp_gstreamerTypes.hpp"
 
 using_library "camera_onvif"
 import_types_from "camera_onvif/CameraOnvif.hpp"
-# Finally, it is pretty common that headers are directly loaded from an external
-# library. In this case, the library must be first used (the name is the
-# library's pkg-config name) and then the header can be used. Following Rock
-# conventions, a common use-case would be:
-#
-# using_library "camera_rtsp_gstreamer"
-# import_types_from "camera_rtsp_gstreamer/CustomType.hpp"
 
 OroGen::Spec::Deployment.register_global_initializer(:gstreamer)
 if defined?(OroGen::Gen::RTT_CPP::Deployment)
     OroGen::Gen::RTT_CPP::Deployment.register_global_initializer(
         :gstreamer,
         deployment_cmake: <<~GST_DEPLOYMENT_CMAKE,
-            orogen_pkg_check_modules(gstreamer_app_1_0 REQUIRED gstreamer-app-1.0 gstreamer-video-1.0)
+            orogen_pkg_check_modules(gstreamer_app_1_0 REQUIRED gstreamer-app-1.0)
             include_directories(${gstreamer_app_1_0_INCLUDE_DIRS})
             add_definitions(${gstreamer_app_1_0_CFLAGS_OTHER})
             link_directories(${gstreamer_app_1_0_LIBRARY_DIRS})
@@ -61,15 +54,15 @@ task_context 'ReceiverTask' do
     property 'width', 'int', 1280
     property 'height', 'int', 720
 
-    property 'ip', '/std/string', '10.20.0.188'
+    property 'ip', '/std/string', '10.20.0.187'
 
     property 'pass', '/std/string', 'camera01'
-
     property 'user', '/std/string', 'admin'
 
     # The images to stream
     output_port 'images', ro_ptr('/base/samples/frame/Frame')
 
+    # Parameters to set through ONVIF (brightness, contrast and color saturation)
     input_port 'image_param', 'camera_onvif::ImageParam'
 
     exception_states 'GSTREAMER_ERROR'

@@ -13,14 +13,23 @@
 
 namespace camera_rtsp_gstreamer {
     struct CustomData {
-        GstElement *pipeline;
-        GstElement *sink;
+        GstElement *pipeline = nullptr;
+        GstElement *sink = nullptr;
 
         typedef base::samples::frame::Frame Frame;
         typedef RTT::extras::ReadOnlyPointer<Frame> ROPtrFrame;
 
         ROPtrFrame frame;
-        RTT::OutputPort<ROPtrFrame> *writer;
+        RTT::OutputPort<ROPtrFrame> *writer = nullptr;
+
+        ~CustomData(){
+            gst_object_unref (pipeline);
+            gst_object_unref (sink);
+
+            delete pipeline;
+            delete sink;
+            delete writer;
+        }
     };
 
 
