@@ -3,6 +3,7 @@
 // TODO: See pipeline conversion to RGB format and set an Frame object with the image
 
 #include "ReceiverTask.hpp"
+#include <memory>
 
 using namespace std;
 using namespace base::samples::frame;
@@ -62,7 +63,7 @@ bool ReceiverTask::configureHook()
         return false;
 
     // Camera Onvif Initialization and setting
-    camera = new camera_onvif::CameraOnvif(_user.get(), _pass.get(), _ip.get());
+    unique_ptr<camera_onvif::CameraOnvif> camera(new camera_onvif::CameraOnvif(_user.get(), _pass.get(), _ip.get()));
     camera->setResolution(_width.get(), _height.get());
 
     auto params = camera_onvif::ImageParam();
@@ -82,7 +83,6 @@ bool ReceiverTask::configureHook()
     if (error != NULL) {
         g_print ("could not construct pipeline: %s\n", error->message);
         g_clear_error (&error);
-        delete camera;
         return false;
     }
 
@@ -100,10 +100,10 @@ bool ReceiverTask::configureHook()
     GstStateChangeReturn ret = gst_element_set_state (data.pipeline, GST_STATE_READY);
     if (ret == GST_STATE_CHANGE_FAILURE) {
         g_printerr ("Unable to set the pipeline to the ready state.\n");
-        delete camera;
         return false;
     }
 
+    m_camera = camera.release();
     return true;
 }
 bool ReceiverTask::startHook()
@@ -125,7 +125,7 @@ void ReceiverTask::updateHook()
     ReceiverTaskBase::updateHook();
     auto img_param = camera_onvif::ImageParam();
     if (_image_param.read(img_param) == RTT::NewData){
-        camera->setImageParam(img_param);
+        m_camera->setImageParam(img_param);
     }
 }
 void ReceiverTask::errorHook()
@@ -141,5 +141,5 @@ void ReceiverTask::cleanupHook()
 {
     gst_element_set_state (data.pipeline, GST_STATE_NULL);
     ReceiverTaskBase::cleanupHook();
-    delete camera;
+    delete m_camera;
 }

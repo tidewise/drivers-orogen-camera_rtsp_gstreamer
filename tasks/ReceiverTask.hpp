@@ -54,7 +54,7 @@ namespace camera_rtsp_gstreamer {
         CustomData data;
         static GstFlowReturn new_sample (GstElement *sink, CustomData *data);
 
-        camera_onvif::CameraOnvif *camera = nullptr;
+        camera_onvif::CameraOnvif *m_camera = nullptr;
 
     protected:
 
