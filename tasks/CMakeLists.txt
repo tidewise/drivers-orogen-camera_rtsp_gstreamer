@@ -4,7 +4,7 @@ include(camera_rtsp_gstreamerTaskLib)
 ADD_LIBRARY(${CAMERA_RTSP_GSTREAMER_TASKLIB_NAME} SHARED
     ${CAMERA_RTSP_GSTREAMER_TASKLIB_SOURCES})
 add_dependencies(${CAMERA_RTSP_GSTREAMER_TASKLIB_NAME}
-    regen-typekit gstreamer-video-1.0)
+    regen-typekit)
 
 
 TARGET_LINK_LIBRARIES(${CAMERA_RTSP_GSTREAMER_TASKLIB_NAME}
