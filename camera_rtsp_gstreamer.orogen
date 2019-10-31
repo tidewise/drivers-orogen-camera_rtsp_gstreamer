@@ -54,10 +54,10 @@ task_context 'ReceiverTask' do
     property 'width', 'int', 1280
     property 'height', 'int', 720
 
-    property 'ip', '/std/string', '10.20.0.187'
+    property 'ip', '/std/string'
 
-    property 'pass', '/std/string', 'camera01'
-    property 'user', '/std/string', 'admin'
+    property 'pass', '/std/string'
+    property 'user', '/std/string'
 
     # The images to stream
     output_port 'images', ro_ptr('/base/samples/frame/Frame')
