@@ -52,7 +52,7 @@ namespace camera_rtsp_gstreamer {
         friend class ReceiverTaskBase;
 
         CustomData *m_data;
-        static GstFlowReturn new_sample (GstElement *sink, CustomData *data);
+        static GstFlowReturn new_sample (GstElement *sink, CustomData **data);
 
         camera_onvif::CameraOnvif *m_camera = nullptr;
 
