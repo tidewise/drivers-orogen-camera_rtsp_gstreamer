@@ -25,10 +25,6 @@ namespace camera_rtsp_gstreamer {
         ~CustomData(){
             gst_object_unref (pipeline);
             gst_object_unref (sink);
-
-            delete pipeline;
-            delete sink;
-            delete writer;
         }
     };
 

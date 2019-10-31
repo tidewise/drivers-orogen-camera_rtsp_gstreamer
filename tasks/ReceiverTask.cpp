@@ -142,8 +142,11 @@ void ReceiverTask::stopHook()
 }
 void ReceiverTask::cleanupHook()
 {
-    gst_element_set_state (m_data->pipeline, GST_STATE_NULL);
     ReceiverTaskBase::cleanupHook();
+    gst_element_set_state (m_data->pipeline, GST_STATE_NULL);
+    cout << "cleanup" << endl;
     delete m_camera;
+    cout << "cleanup camera" << endl;
     delete m_data;
+    cout << "cleanup data" << endl;
 }
