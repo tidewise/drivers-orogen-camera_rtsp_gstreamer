@@ -3,15 +3,37 @@
 #ifndef CAMERA_RTSP_GSTREAMER_RECEIVERTASK_TASK_HPP
 #define CAMERA_RTSP_GSTREAMER_RECEIVERTASK_TASK_HPP
 
+#include <gst/gst.h>
+#include <gst/app/gstappsink.h>
+#include <gst/video/video.h>
+#include <base/samples/Frame.hpp>
+#include <string.h>
 #include "camera_rtsp_gstreamer/ReceiverTaskBase.hpp"
+#include <camera_onvif/CameraOnvif.hpp>
 
-namespace camera_rtsp_gstreamer{
+namespace camera_rtsp_gstreamer {
+    struct CustomData {
+        GstElement *pipeline = nullptr;
+        GstElement *sink = nullptr;
+
+        typedef base::samples::frame::Frame Frame;
+        typedef RTT::extras::ReadOnlyPointer<Frame> ROPtrFrame;
+
+        ROPtrFrame frame;
+        RTT::OutputPort<ROPtrFrame> *writer = nullptr;
+
+        ~CustomData(){
+            gst_object_unref (pipeline);
+            gst_object_unref (sink);
+        }
+    };
+
 
     /*! \class ReceiverTask
      * \brief The task context provides and requires services. It uses an ExecutionEngine to perform its functions.
      * Essential interfaces are operations, data flow ports and properties. These interfaces have been defined using the oroGen specification.
      * In order to modify the interfaces you should (re)use oroGen and rely on the associated workflow.
-     * 
+     *
      * \details
      * The name of a TaskContext is primarily defined via:
      \verbatim
@@ -23,10 +45,14 @@ namespace camera_rtsp_gstreamer{
      */
     class ReceiverTask : public ReceiverTaskBase
     {
-	friend class ReceiverTaskBase;
+        friend class ReceiverTaskBase;
+
+        CustomData *m_data;
+        static GstFlowReturn new_sample (GstElement *sink, CustomData **data);
+
+        camera_onvif::CameraOnvif *m_camera = nullptr;
+
     protected:
-
-
 
     public:
         /** TaskContext constructor for ReceiverTask
@@ -37,7 +63,7 @@ namespace camera_rtsp_gstreamer{
 
         /** Default deconstructor of ReceiverTask
          */
-	~ReceiverTask();
+        ~ReceiverTask();
 
         /** This hook is called by Orocos when the state machine transitions
          * from PreOperational to Stopped. If it returns false, then the

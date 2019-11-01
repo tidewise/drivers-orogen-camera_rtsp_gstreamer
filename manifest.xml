@@ -4,14 +4,10 @@
   </description>
   <author>Henrique Ferreira Júnior/henrique.ferreira@tidewise.io</author>
   <license></license>
-  <url>http://gitlab.com/henriquejsfj</url>
+  <url>https://github.com/tidewise/drivers-orogen-camera_rtsp_gstreamer</url>
   <logo>http://</logo>
   <depend package="base/cmake" />
-  <!--
-   To add any dependencies use the depend tag
-  <depend package="dummy-dependency-0" />
-	...
-  <depend package="dummy-dependency-n-1" />
-  <depend package="dummy-dependency-n" />
-  -->
+  <depend package="drivers/camera_onvif"/>
+  <depend package="gstreamer" />
+  <tags>needs_opt</tags>
 </package>

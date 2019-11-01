@@ -8,13 +8,9 @@ using_library 'libsoup-2.4', typekit: false
 using_library 'json-glib-1.0', typekit: false
 import_types_from 'base'
 import_types_from "camera_rtsp_gstreamerTypes.hpp"
-# Finally, it is pretty common that headers are directly loaded from an external
-# library. In this case, the library must be first used (the name is the
-# library's pkg-config name) and then the header can be used. Following Rock
-# conventions, a common use-case would be:
-#
-# using_library "camera_rtsp_gstreamer"
-# import_types_from "camera_rtsp_gstreamer/CustomType.hpp"
+
+using_library "camera_onvif"
+import_types_from "camera_onvif/CameraOnvif.hpp"
 
 OroGen::Spec::Deployment.register_global_initializer(:gstreamer)
 if defined?(OroGen::Gen::RTT_CPP::Deployment)
@@ -49,19 +45,27 @@ task_context 'ReceiverTask' do
 
     needs_global_initializer :gstreamer
 
-    # The target fps
-    property 'fps', 'int', 25
+    # The imaging options are percentage 0-1.
+    property 'contrast', 'float', 0.5
+    property 'brightness', 'float', 0.5
+    property 'color_saturation', 'float', 0.5
 
-    # The port on which the embedded server is listening
-    property 'port', 'int', 57_778
+    # The resolution options (width, height) are: (1920, 1080) - (1280, 960) - (1280, 720)
+    property 'width', 'int', 1280
+    property 'height', 'int', 720
 
-    # Encoding configuration (defaults to VP8)
-    property 'encoding', 'camera_rtsp_gstreamer/Encoding'
+    property 'ip', '/std/string'
+
+    property 'pass', '/std/string'
+    property 'user', '/std/string'
 
     # The images to stream
     output_port 'images', ro_ptr('/base/samples/frame/Frame')
 
-    port_driven
+    # Parameters to set through ONVIF (brightness, contrast and color saturation)
+    input_port 'image_param', 'camera_onvif::ImageParam'
 
     exception_states 'GSTREAMER_ERROR'
+
+    port_driven 'image_param'
 end
