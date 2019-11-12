@@ -10,5 +10,6 @@
   <depend package="drivers/camera_onvif"/>
   <depend package="gstreamer" />
   <depend package="gstreamer-rtsp" />
+  <depend package="gstreamer-vaapi" />
   <tags>needs_opt</tags>
 </package>
