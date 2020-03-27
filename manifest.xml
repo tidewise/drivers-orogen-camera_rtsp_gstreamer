@@ -1,11 +1,10 @@
 <package>
   <description brief="Simple package to receive frames from an ip camera (rtsp) through gstreamer and convert it into Rock image (base::samples::frame::frame) to an outpout port.">
-  To achieve this objective, appsink from gstreamer is used. At hook configuration we set the appsink structure. Then at hook start the pipeline is set defining the callback (signal) to receive appsink frames. And finally, hook update send the image from appsink callback to output port.
+    To achieve this objective, appsink from gstreamer is used. At hook configuration we set the appsink structure. Then at hook start the pipeline is set defining the callback (signal) to receive appsink frames. And finally, hook update send the image from appsink callback to output port.
   </description>
   <author>Henrique Ferreira Júnior/henrique.ferreira@tidewise.io</author>
-  <license></license>
+  <license>LGPLv2+</license>
   <url>https://github.com/tidewise/drivers-orogen-camera_rtsp_gstreamer</url>
-  <logo>http://</logo>
   <depend package="base/cmake" />
   <depend package="drivers/camera_onvif"/>
   <depend package="gstreamer" />
